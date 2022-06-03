@@ -4,13 +4,40 @@ const Heading = (props) => <h1>{props.text}</h1>
 const Button = ({ text, handleClick }) => (
   <button onClick={handleClick}>{text}</button>
 )
-const Statistics = ({ text, number }) => {
+
+const StatisticLine = ({ text, number}) => {
   return (
     <div>
       {text} {number}
     </div>
   )
 } 
+
+const Statistics = ({good, bad, neutral}) => {
+  const total = good + bad + neutral
+  if(total === 0) {
+    return(
+      <div>
+        <p>No feedback given</p>
+      </div>
+    )
+  }
+  return (
+    <div>
+      <StatisticLine text={"good"} number={good} />
+      <StatisticLine text={"neutral"} number={neutral} />
+      <StatisticLine text={"bad"} number={bad} />
+      <StatisticLine text={"all"} number={total} />
+      <StatisticLine 
+        text={"average"} 
+        number={(good - bad) / (total)} />
+      <StatisticLine
+        text={"positive"} 
+        number={(good/(total))*100+" %"} 
+      />
+    </div>
+  )
+}
 
 const App = () => {
   const [good, setGood] = useState(0)
@@ -28,17 +55,7 @@ const App = () => {
       <Button text={"neutral"} handleClick={handleNeutral} />
       <Button text={"bad"} handleClick={handleBad} />
       <Heading text={"statistics"} />
-      <Statistics text={"good"} number={good} />
-      <Statistics text={"neutral"} number={neutral} />
-      <Statistics text={"bad"} number={bad} />
-      <Statistics text={"all"} number={good + neutral + bad} />
-      <Statistics 
-        text={"average"} 
-        number={(good - bad) / (good + neutral + bad)} />
-      <Statistics 
-        text={"positive"} 
-        number={(good/(good+neutral+bad))*100+" %"} 
-      />
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
     )
 }
