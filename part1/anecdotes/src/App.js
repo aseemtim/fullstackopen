@@ -34,7 +34,7 @@ const App = () => {
   const max = anecdotes.length
 
   const [selected, setAnecdote] = useState(0)
-  const [vote, setVote] = useState([0,0,0,0,0,0,0])
+  const [vote, setVote] = useState(Array(max).fill(0))
 
   const handleVote = () => {
     const newVotes = vote.concat()
