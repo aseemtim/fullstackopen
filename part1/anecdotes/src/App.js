@@ -30,7 +30,6 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients'
   ]
 
-
   const max = anecdotes.length
 
   const [selected, setAnecdote] = useState(0)
@@ -61,6 +60,5 @@ const App = () => {
     </div>
   )
 }
-
 
 export default App;
