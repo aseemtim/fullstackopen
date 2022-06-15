@@ -1,11 +1,22 @@
 import {useState, useEffect} from 'react'
 import axios from 'axios'
 
-const Country = ({ country }) => {
-  console.log(country)
-  return(
-    <div>{country.name.common}</div>
-  )  
+const Country = ({ country, handleShow, toShow }) => {
+  if(!toShow){
+    return(
+      <div>
+        {country.name.common} <button onClick={handleShow}>show</button>
+      </div>
+    )
+  }
+  else {
+    return(
+      <div>
+          {country.name.common} <button onClick={handleShow}>hide</button>
+          <CountryInfo key={country.name.common} country={country} />
+      </div>
+    )
+  }    
 }
 
 const CountryInfo = ({ country }) => {
@@ -35,6 +46,7 @@ const App = () => {
   const [countries, setCountries] = useState([])
   const [countryToSearch, setCountryToSearch] = useState('')
   const [foundCountries, setFoundCountries] = useState([])
+  const [toShow, setToShow] = useState(false)
 
   const handleSearch = (event) => {
     const keyWord = event.target.value.toLowerCase()
@@ -52,16 +64,26 @@ const App = () => {
         setCountries(response.data)
       })
   },[])
+
+  const handleShow = () => {
+    if(toShow) {
+      setToShow(false)
+    }
+    else {
+      setToShow(true)
+    }
+  } 
   
   return (
+    // 'show' btn needs to be fixed
     <div>
       find countries <input onChange={handleSearch} value={countryToSearch}/>
       {(foundCountries.length === 1) &&
         <CountryInfo country={foundCountries[0]} />
       } 
       {(foundCountries.length > 1) && (foundCountries.length <= 10) &&
-        foundCountries.map(country => (
-          <Country key={country.name.common}country={country}/>
+         foundCountries.map(country => (
+          <Country key={country.name.common}country={country} handleShow={handleShow} toShow={toShow}/>
         ))
       }
       {(foundCountries.length > 10) && (countryToSearch !== '') &&
