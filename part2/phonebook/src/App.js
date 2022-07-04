@@ -38,9 +38,9 @@ const Persons = ({ newFilter, persons}) => {
   }
 }
 
-const Person = ({ person }) => (
-  <div>{person.name} {person.number}</div>
-)
+const Person = ({ person }) => {
+  return <div>{person.name} {person.number}</div>
+}
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -63,13 +63,15 @@ const App = () => {
     event.preventDefault()
     const newPerson = {
       name : newName,
-      phone: newPhone
+      number: newPhone
     }
 
     if(persons.find(element => element.name === newPerson.name)){
       alert(`${newPerson.name} is already added to phonebook`)
     }
     else {
+      axios
+        .post('http://localhost:3001/persons', newPerson)
       setPersons(persons.concat(newPerson))
       setNewName('')
       setNewPhone('')
