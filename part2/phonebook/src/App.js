@@ -68,9 +68,18 @@ const App = () => {
       name : newName,
       number: newPhone
     }
-
-    if(persons.find(element => element.name === newPerson.name)){
-      alert(`${newPerson.name} is already added to phonebook`)
+    
+    const duplicateRecord = persons.find(element => {
+     return element.name.toLowerCase() === newPerson.name.toLocaleLowerCase()})
+    if(duplicateRecord){
+      if(window.confirm(`${newPerson.name} is already added to phonebook, replace the old number with a new one?`)){
+        phoneBookService
+          .update(newPerson, duplicateRecord.id)
+          .then(returnedData => {
+            const updatedRecord = persons.map(element => element===duplicateRecord?returnedData:element)
+            setPersons(updatedRecord)
+          })
+      }
     }
     else {
       phoneBookService
