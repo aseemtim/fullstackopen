@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import phoneBookService from './services/persons.js'
 
 const Filter = ({ handleFilter, newFilter}) => (
@@ -24,23 +23,26 @@ const PersonForm = (
   </form>
 )
 
-const Persons = ({ newFilter, persons}) => {
+const Persons = ({ newFilter, persons, handleDelete}) => {
   if(newFilter === '') {
     return(persons.map(person => 
-      <Person key={person.name} person={person} />))
+      <Person key={person.name} person={person} handleDelete={handleDelete} />))
   }
   else{
     return(
       persons.filter(element => element.name.toLowerCase()
         .includes(newFilter.toLowerCase()))
           .map(person => (
-            <Person key={person.name} person={person} /> 
+            <Person key={person.name} person={person} id={person.id} handleDelete={handleDelete} /> 
           )))
   }
 }
 
-const Person = ({ person }) => {
-  return <div>{person.name} {person.number}</div>
+const Person = ({ person, handleDelete }) => {
+  return <div>
+    {person.name} {person.number} {'  '}
+    <button onClick={() => handleDelete(person.name, person.id)}>delete</button>
+    </div>
 }
 
 const App = () => {
@@ -93,6 +95,16 @@ const App = () => {
     setNewPhone(event.target.value)
   }
 
+  const handleDelete = (name, id) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      phoneBookService
+      .remove(id)
+      .then(
+        setPersons(persons.filter(element => element.id!==id))
+        )
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -100,7 +112,7 @@ const App = () => {
       <h3> Add a new</h3>
       <PersonForm handleSubmit={handleSubmit} handleName={handleName} newName={newName} handlePhone={handlePhone} newPhone={newPhone} />
       <h2>Numbers</h2>
-      <Persons newFilter={newFilter} persons={persons}/>
+      <Persons newFilter={newFilter} persons={persons} handleDelete={handleDelete}/>
     </div>
   )
 }
