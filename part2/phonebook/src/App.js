@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import phoneBookService from './services/persons.js'
+import Notification from './components/Notification'
 
 const Filter = ({ handleFilter, newFilter}) => (
   <p>
@@ -54,6 +55,10 @@ const App = () => {
 
   const [newFilter, setNewFilter] = useState('')
 
+  const [notificationMessage, setNotificationMessage] = useState(null)
+
+  const [notificationType, setNotificationType] = useState('')
+
   useEffect(() => {
     phoneBookService
       .getAll()
@@ -71,7 +76,8 @@ const App = () => {
     
     const duplicateRecord = persons.find(element => {
      return element.name.toLowerCase() === newPerson.name.toLocaleLowerCase()})
-    if(duplicateRecord){
+    
+     if(duplicateRecord){
       if(window.confirm(`${newPerson.name} is already added to phonebook, replace the old number with a new one?`)){
         phoneBookService
           .update(newPerson, duplicateRecord.id)
@@ -79,6 +85,13 @@ const App = () => {
             const updatedRecord = persons.map(element => element===duplicateRecord?returnedData:element)
             setPersons(updatedRecord)
           })
+          .catch(error => {
+            setNotificationType('error')
+            setNotificationMessage(`Information of ${duplicateRecord.name} has already been removed from server`)
+            setTimeout(() => {
+              setNotificationMessage(null)
+            }, 5000);
+            })
       }
     }
     else {
@@ -88,6 +101,11 @@ const App = () => {
           setPersons(persons.concat(returnedRecord))
           setNewName('')
           setNewPhone('')
+          setNotificationType('add')
+          setNotificationMessage(`Added ${newPerson.name}`)
+          setTimeout(() => {
+            setNotificationMessage(null)
+          }, 3000)
         })
     }
   }
@@ -117,6 +135,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage} type={notificationType}/>
       <Filter handleFilter={handleFilter} values={newFilter}/>
       <h3> Add a new</h3>
       <PersonForm handleSubmit={handleSubmit} handleName={handleName} newName={newName} handlePhone={handlePhone} newPhone={newPhone} />
