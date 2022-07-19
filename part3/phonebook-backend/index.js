@@ -1,7 +1,13 @@
 const express = require('express')
+
+const morgan = require('morgan')
+morgan.token('postContent', (req, res) => JSON.stringify(req.body))
+
 const app = express()
 
 app.use(express.json())
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postContent'))
 
 let persons = [
     { 
@@ -46,7 +52,8 @@ app.get('/info', (request, response) => {
 
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
-  persons.find(person => person.id === id)
+  const person = persons.find(person => person.id === id)
+  person
     ? response.json(person)
     : response.status(404).end()
 })
